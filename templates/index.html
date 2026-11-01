@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>COMSATS Assignment Portal</title><link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<main class="container">
+  <header><p class="eyebrow">COMSATS UNIVERSITY · ATTOCK CAMPUS</p><h1>Assignment Submission Portal</h1><p>Submit your assignment link and review saved submissions.</p></header>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}<div class="notice {{ category }}">{{ message }}</div>{% endfor %}
+  {% endwith %}
+  <section class="panel">
+    <h2>New submission</h2>
+    <form method="post">
+      <label>Student name<input name="name" required placeholder="Your full name"></label>
+      <label>Registration number<input name="reg_no" required placeholder="e.g. FA24-BCS-001"></label>
+      <label>Assignment title<input name="title" required placeholder="Assignment title"></label>
+      <label>Submission URL<input name="submission_url" type="url" required placeholder="https://example.com/your-work"></label>
+      <button type="submit">Submit assignment</button>
+    </form>
+  </section>
+  <section class="panel">
+    <h2>Saved submissions <span class="count">{{ submissions|length }}</span></h2>
+    {% if submissions %}
+    <div class="table-wrap"><table><thead><tr><th>Student</th><th>Registration</th><th>Assignment</th><th>Link</th></tr></thead><tbody>
+    {% for item in submissions %}<tr><td>{{ item.name }}</td><td>{{ item.reg_no }}</td><td>{{ item.title }}</td><td><a href="{{ item.submission_url }}" target="_blank" rel="noopener">Open submission</a></td></tr>{% endfor %}
+    </tbody></table></div>
+    {% else %}<p class="muted">No submissions yet. Add the first one above.</p>{% endif %}
+  </section>
+  <footer>CSC418 · DevOps for Cloud Computing</footer>
+</main>
+</body></html>

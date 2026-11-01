@@ -1,0 +1,85 @@
+name: CSC418 CI, report and deployment
+
+on:
+  push:
+    branches: ["**"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  test-and-report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run tests and create raw test results
+        id: tests
+        continue-on-error: true
+        run: pytest --json-report --json-report-file=pytest-report.json -v
+      - name: Build final JSON report
+        if: always()
+        continue-on-error: true
+        run: python scripts/build_report.py
+      - name: Send report to local computer
+        if: always() && hashFiles('testreport.json') != ''
+        env:
+          LOCAL_REPORT_URL: ${{ secrets.LOCAL_REPORT_URL }}
+          REPORT_TOKEN: ${{ secrets.REPORT_TOKEN }}
+        run: |
+          if [ -z "$LOCAL_REPORT_URL" ] || [ -z "$REPORT_TOKEN" ]; then
+            echo "LOCAL_REPORT_URL or REPORT_TOKEN secret is missing."
+            exit 1
+          fi
+          curl --fail-with-body --silent --show-error -X POST "$LOCAL_REPORT_URL" \
+            -H "Content-Type: application/json" \
+            -H "X-Report-Token: $REPORT_TOKEN" \
+            --data-binary @testreport.json
+      - name: Email report (optional bonus)
+        if: always() && hashFiles('testreport.json') != ''
+        env:
+          MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+          REPORT_EMAIL: ${{ vars.REPORT_EMAIL }}
+        run: |
+          if [ -z "$MAIL_USERNAME" ] || [ -z "$MAIL_PASSWORD" ] || [ -z "$REPORT_EMAIL" ]; then
+            echo "Email bonus is not configured; skipping."
+            exit 0
+          fi
+          python scripts/send_email.py
+      - name: Fail workflow if tests failed
+        if: always()
+        run: |
+          if [ "${{ steps.tests.outcome }}" != "success" ]; then
+            echo "Tests failed. See test output and testreport.json."
+            exit 1
+          fi
+
+  deploy-pages:
+    needs: test-and-report
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+      - name: Upload static demo
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
