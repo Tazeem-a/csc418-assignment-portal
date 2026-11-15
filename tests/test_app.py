@@ -14,17 +14,17 @@ def client(tmp_path, monkeypatch):
 
 def test_complete_submission_is_saved_and_displayed(client):
     response = client.post("/", data={
-        "name": "Ali Khan", "reg_no": "FA24-BCS-001",
+        "name": "Tazeem", "reg_no": "SP23-BCS-039",
         "title": "DevOps Lab", "submission_url": "https://example.com/work"
     }, follow_redirects=True)
     assert response.status_code == 200
     assert b"Submission saved successfully" in response.data
-    assert b"Ali Khan" in response.data
-    assert b"FA24-BCS-001" in response.data
+    assert b"Tazeem" in response.data
+    assert b"SP23-BCS-039" in response.data
 
 def test_missing_registration_number_is_rejected(client):
     response = client.post("/", data={
-        "name": "Ali Khan", "reg_no": "",
+        "name": "Tazeem", "reg_no": "",
         "title": "DevOps Lab", "submission_url": "https://example.com/work"
     })
     assert response.status_code == 200
@@ -33,7 +33,7 @@ def test_missing_registration_number_is_rejected(client):
 
 def test_invalid_submission_url_is_rejected_and_not_saved(client):
     response = client.post("/", data={
-        "name": "Ali Khan", "reg_no": "FA24-BCS-001",
+        "name": "Tazeem", "reg_no": "SP23-BCS-039",
         "title": "DevOps Lab", "submission_url": "not-a-url"
     })
     assert response.status_code == 200
