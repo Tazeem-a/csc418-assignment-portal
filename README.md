@@ -147,3 +147,7 @@ The deployed URL normally looks like:
 ## Security note
 
 This is a teaching project. Use a strong random report token, keep secrets in GitHub Actions settings, and do not expose the Flask student portal publicly without production security controls.
+155c0228bc34c0e4120a80da616657ed8b4ef34d527c1454933016e258a21119$env:REPORT_TOKEN="YAHAN_APNA_NAYA_TOKEN_PASTE_KARO"
+
+cloudflared tunnel --url http://localhost:8000
+https://vocal-specialist-curious-train.trycloudflare.com   

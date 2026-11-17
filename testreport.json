@@ -1,1 +1,31 @@
-[]
+{
+  "repository": "Tazeem-a/csc418-assignment-portal",
+  "branch": "main",
+  "commit_sha": "fc99925268032222e0e977c9a1c24c987738cf79",
+  "pipeline_run_id": "44056624798",
+  "execution_timestamp": "2026-11-17T10:17:25.077932+00:00",
+  "tests": [
+    {
+      "name": "tests/test_app.py::test_complete_submission_is_saved_and_displayed",
+      "result": "passed",
+      "failure_message": null
+    },
+    {
+      "name": "tests/test_app.py::test_missing_registration_number_is_rejected",
+      "result": "passed",
+      "failure_message": null
+    },
+    {
+      "name": "tests/test_app.py::test_invalid_submission_url_is_rejected_and_not_saved",
+      "result": "passed",
+      "failure_message": null
+    }
+  ],
+  "summary": {
+    "total": 3,
+    "passed": 3,
+    "failed": 0,
+    "status": "passed"
+  },
+  "received_at": "2026-11-17T10:17:25.163974+00:00"
+}
